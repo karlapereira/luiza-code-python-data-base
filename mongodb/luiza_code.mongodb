@@ -1,0 +1,302 @@
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+
+// ----- 1. CREATE -----/
+
+// Insert a few documents into the sales collection.
+    use('luiza_code');
+    db.clients.insertMany([
+        { '_id': 1,'name': 'Luiza', 'email': 'Luiza@gmail.com'},
+        { '_id': 2,'name': 'Maria', 'email': 'Maria@gmail.com'},
+        { '_id': 3,'name': 'João', 'email': 'João@gmail.com'},
+        { '_id': 4,'name': 'José', 'email': 'José@gmail.com'}
+    ]);
+
+    use('luiza_code');
+    db.clients.insertOne(
+        {'name': 'Gabi', 'email': 'Gabi@gmail.com'}
+    );
+
+    use('luiza_code');
+    db.products.insertMany([
+        {'_id': 101, 'name': 'Notebook', 'price': 5780.00, 'quantity': 18, 'updated_at': new Date() },
+        {'_id': 102, 'name': 'Mouse', 'price': 80.00, 'quantity': 56, 'updated_at': new Date() },
+        {'_id': 103, 'name': 'Teclado', 'price': 200.00, 'quantity': 21, 'updated_at': new Date() },
+        {'_id': 104, 'name': 'Mousepad', 'price': 50.00, 'quantity': 12, 'updated_at': new Date() },
+        {'_id': 105, 'name': 'Iphone', 'price': 7200.00, 'quantity': 12, 'updated_at': new Date() }
+    ]);
+
+    use('luiza_code');
+    db.wishlists.insertMany([
+        {'_id': 456, 'name': 'Favorita1', 'client_id': 2, 'id_products': [105]},
+        {'_id': 457, 'name': 'Melhores', 'client_id': 3, 'id_products': [101, 105]},
+        {'_id': 458, 'name': 'FavoritaLu', 'client_id': 1, 'id_products': [101, 102]},
+        {'_id': 459, 'name': 'FavoritaLu2', 'client_id': 1, 'id_products': [105]},
+        {'_id': 460, 'name': 'Gamer', 'client_id': 4, 'id_products': [101, 102, 103, 104]}
+    ]);
+
+
+// -----  2. READ -------
+    use('luiza_code');
+    db.clients.find({_id: ObjectId("626b2e144a4b2c867dc01957")});
+
+    use('luiza_code');
+    db.clients.find().pretty()
+
+    use('luiza_code');
+    db.products.find().pretty()
+
+    use('luiza_code');
+    db.wishlists.find().pretty()
+
+
+
+
+    // operadores gt e lt >=, <=, >, <
+    use('luiza_code');
+    db.products.find(
+        {price: {$gte:5000}}
+    )
+
+    use('luiza_code');
+    db.products.find(
+        {price: {$lte: 5000}}
+    )
+
+    use('luiza_code');
+    db.products.find(
+        {price: 200.00}
+    )
+
+
+
+
+
+
+    // regex
+    // clientes que começam com a letra J
+    use('luiza_code');
+    db.clients.find(
+        {name: {$regex: "^J"}}
+    );
+
+    // clientes que terminam com a letra a
+    use('luiza_code');
+    db.clients.find(
+        {name: {$regex: "a$"}}
+    );
+
+
+
+
+
+
+
+
+    // operadores lógicos e /ou 
+    use('luiza_code');
+    db.products.find(
+        {
+            $or: [
+                { price: {$gte: 5000.00}}, {quantity:12}
+            ]
+        }
+    );
+
+    use('luiza_code');
+    db.products.find(
+        {
+            $and: [
+                { price: {$gte: 5000.00}}, {quantity: {$gte:15}}
+            ]
+        }
+    );
+
+
+    use('luiza_code');
+    db.products.find(
+        {
+            $and: [
+                {price: {$lte: 5000}}, {quantity: {$gte: 10} }
+            ]
+        }
+    )
+
+
+
+    // operadores all/in
+    use('luiza_code');
+    db.wishlists.find(
+        {id_products: {$all: [101, 105]} }
+    );
+
+    use('luiza_code');
+    db.wishlists.find(
+        {id_products: {$in: [101, 105]} }
+    )
+
+
+
+
+
+    // limit
+    use('luiza_code');
+    db.wishlists.find(
+        {id_products: {$in: [101, 105]} }
+    ).limit(1)
+
+
+    // sorte 1 asc or -1 desc
+    use('luiza_code');
+    db.products.find().sort({"price": -1});
+
+
+
+// -----  3. Update -------
+/* A função update recebe dois objetos como parâmetro, 
+    o primeiro é a query para busca, 
+    e o segundo objeto é o replace.
+*/
+
+    /** O operador set é usado quando queremos evitar que a substituição inteira do document aconteça, ou seja, 
+    quando queremos acrescentar e / ou alterar somente alguns campos no document, sem apagar todos os outros. */
+    use('luiza_code');
+    db.products.update(
+        { _id: 101},
+        { $set:  {'price': 5750.00}}
+    );
+
+    //Cria um novo document, caso não exista nenhum com as características passadas.
+    use('luiza_code');
+    db.products.updateOne(
+        { _id: 107},
+        { $set:  {'price': 5780.00}}, 
+        { upsert: true}
+    );
+
+    // Remove os campos especificados nele.
+    use('luiza_code');
+    db.products.update(
+        { _id: 105},
+        { $unset: {price: 5780.00}}
+    )
+
+
+
+// 4. Delete
+    // As operações de exclusão removem documentos de uma coleção.
+    use('luiza_code');
+    db.products.deleteMany(
+        {_id: 107}
+    );
+
+
+
+
+
+
+
+        
+
+
+// 5. Agregações
+    //As operações de agregação processam vários documentos e retornam os resultados calculados
+
+    use('luiza_code');
+    db.products.aggregate(
+        [
+            {
+                $group: {
+                    '_id': {},
+                    'min_price': {$min: '$price'}, 
+                    'max_price': {$max: '$price'}, 
+                    'sum_price': {$sum: '$price'}, 
+                    'avg_price': {$avg: '$price'},
+                    'total_quantity': {$sum: '$quantity'}
+                }
+            },
+            { 
+                $sort: {_id:1}
+            }
+        ]
+    );
+
+    use('luiza_code');
+    db.wishlists.find()
+
+    use('luiza_code');
+    db.wishlists.aggregate(
+        [
+            { //filter
+                $match:{'id_products': 101}
+            },
+            {
+                $group: {'_id':
+                {
+                    'client_id': '$client_id'          
+                }
+                },
+            },
+            { 
+                $sort: {'_id.client_id':1}
+            }
+        ]
+    );
+
+    //relacionamento entre coleções
+    use('luiza_code');
+    db.wishlists.aggregate([
+            {
+                $lookup: {
+                    from: "clients",
+                    localField: "client_id",
+                    foreignField: "_id",
+                    as: "client"
+            }
+        }
+    ]).pretty();
+
+    use('luiza_code');
+    db.wishlists.aggregate([
+        {
+            $lookup: {
+                from: "products",
+                localField: "id_products",
+                foreignField: "_id",
+                as: "products"
+            }
+        }
+    ]).pretty()
+
+
+    use('luiza_code');
+    db.products.count();
+
+
+    use('luiza_code');
+    db.wishlists.distinct('client_id');
+
+
+
+// 6. Bônus (Index)
+    use('luiza_code');
+    db.products.find(
+        {name: "Notebook"}
+    ).explain();
+
+
+    use('luiza_code');
+    db.products.createIndex(
+        {name:1}
+    )
+
+    use('luiza_code');
+    db.products.dropIndex("name_1");
+
+    use('luiza_code');
+    db.products.find(
+        {name: "Notebook"}
+    ).explain()
