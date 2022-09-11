@@ -1,0 +1,125 @@
+//create user
+info_insert = db.user.insertOne(
+    {
+        "email": "lu_domagalu@gmail.com",
+        "password": "213sd312re3",
+        "is_active": true,
+        "is_admin": false
+    }
+);
+
+info_insert;
+
+user_x = db.user.find({"_id": ObjectId("")}).pretty();
+
+user_x;
+// create address
+db.address.find().pretty();
+
+// valida a existência de endereço para usuário X
+user_address = db.address.find({
+    'user._id': ObjectId("")
+});
+user_address;
+user_x;
+
+// inserir endereço quando não existe nenhum endereço para usuário X
+info_insert_address = db.address.insertOne(
+    {
+       "user": '{object_id_user}',
+       "address: [
+           {
+              "street": "Rua Quarenta e Sete, Numero 3",
+              "cep": "8465312",
+              "district": "São Paulo",
+              "city": "São Paulo",
+              "state": "São Paulo",
+              "is_delivery": true
+           }
+       ]
+    }
+);
+
+info_insert_address;
+
+// inserir endereço quando existe endereço para usuário X
+db.address.updateOne(
+    {"_id": ObjectId("")},
+    {
+        $addToSet: {
+            address: '{object_id_address}'
+        }
+    }
+);
+
+info_insert_address;
+
+db.address.find({
+    "_id": '{object_id_address}'
+});
+
+// products
+db.product.find().pretty();
+
+db.produt.insertMany([
+    {
+        "name" : "Bicicleta Aro 29 Freio a Disco 21M. Velox Branca/Verde - Ello Bike",
+        "description" : "Bicicleta produzida com materiais de qualidade e foi criada pensando nas pessoas que desejam praticar o ciclismo e ter uma vida saudável sem abrir mão de conforto um excelente custo x benefício.",
+        "price" : 898.2,
+        "image" : "https://a-static.mlcdn.com.br/800x560/bicicleta-aro-29-freio-a-disco-21m-velox-branca-verde-ello-bike/ellobike/6344175219/b84d5dd41098961b4c2f397af40db4ce.jpg",
+        "code" : 97880
+    },
+    {
+        "name" : "Fritadeira Elétrica sem Óleo/Air Fryer Nell Fit - Preto 3,2L com Timer",
+        "description" : "A fritadeira elétrica Nell Fit é um eletroportátil que não pode faltar na sua cozinha. O produto proporciona uma alimentação mais saudável, pois não utiliza óleo/Air Fryer em seu processo de cozimento. A fritadeira na cor preta é compacta e produzida em PP, ocupando menos espaço, possui luz indicadora de funcionamento, controle de temperatura, cesta removível antiaderente, capacidade total de 4,2L e cesto com capacidade de 3,2L. Sua alça fria garante maior segurança ao manusear a fritadeira e além disso, ela possui timer de 30 minutos sonoro e com desligamento automático. Agora é só preparar batatinha frita, coxinha, bolinha de queijo e pastel na sua fritadeira elétrica!",
+        "price" : 369.0,
+        "image" : "https://a-static.mlcdn.com.br/800x560/fritadeira-eletrica-sem-oleo-air-fryer-nell-fit-preto-32l-com-timer/magazineluiza/222479100/64ef4d6200a6efc6cce6d265588910a9.jpg",
+        "code" : 222479100
+    }
+]);
+
+
+// order
+
+// Busca o endereco do usuário X que está com o is_delivery = true
+object_id_aggregate = db.address.aggregate([
+    {
+        $match:{
+            "user.email": "lu_domagalu@gmail.com",
+            "user.is_active": true
+       }
+    },
+    {
+       $unwind: '$address'
+    },
+    {
+       $match: {
+    		'address.is_delivery':true
+        }
+    }
+]);
+
+info_order_insert = db.order.insertOne({
+    user: '{object_id_user}',
+    price: 1796.4,
+    paid: false,
+    address: '{object_id_aggregate}'   
+});
+info_order_insert;
+
+// oder_item
+db.order.find({
+    "_id": ObjectId("")
+});
+
+db.order_item.insertMany([
+    {
+        order: '{object_id_order}',
+        product: '{object_id_product}'
+    },
+    {
+        order: '{object_id_order}',
+        product: '{object_id_product}'
+    }
+]);
+
