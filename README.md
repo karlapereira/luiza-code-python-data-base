@@ -1,5 +1,5 @@
 # Luiza Code Python 2022
-Repositório com o material do programa Luiza Code Python 2022 do grupo Magazine Luiza
+Repositório com o material relacionado a banco de dados do programa Luiza Code Python 2022 do grupo Magazine Luiza
 
 # Links downloads:
 - SQL:
@@ -8,7 +8,7 @@ Repositório com o material do programa Luiza Code Python 2022 do grupo Magazine
 - NoSQL:
   - Extensão MongoDB for VS Code: Extensão para conectar o ao MongoDB e o Atlas diretamente pelo VS Code.
   - Mongo Atlas: É um serviço de banco de dados em nuvem totalmente gerenciado, desenvolvido pela equipe oficial do MongoDB.
-    * Link: https://www.mongodb.com/docs/manual/crud/
+    * Link: https://www.mongodb.com/atlas/database
   - Documentação oficial MongoDB: https://www.mongodb.com/docs/manual/crud/
 
 # Módulo 7 - Banco de Dados
