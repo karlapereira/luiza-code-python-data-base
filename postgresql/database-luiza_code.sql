@@ -48,6 +48,7 @@ create table products(
 	image char(100)
 );
 
+
 create table order_items(
 	code char(100) generated always as (CAST(id_order as char) || '_' || CAST(id_product as char)) stored,
 	id_order int,
@@ -60,7 +61,11 @@ create table order_items(
 );
 
 
+
+
 select * from products;
+
+
 
 
 
@@ -88,33 +93,90 @@ SELECT * FROM pg_catalog.pg_user;
 insert into users (email, password)
 	values ('karlapereira', 123);
 
+insert into users (email, password, is_admin)
+	values ('lu_domagalu@gmail.com', 12345, true);
+
 select * from users;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 insert into address (user_id, street, cep, district, city, state)
 	values (1, 'rua xxxxxx, xx', '01311100', 'xxxx', 'sao paulo', 'sp');
+
+
+
+
 insert into address (user_id, street, cep, district, city, state)
-	values (1, 'rua xxxxxx, xx', '31630900', 'xxxx', 'belo horizonte', 'mg');
+	values (10, 'rua xxxxxx, xx', '31630900', 'xxxx', 'belo horizonte', 'mg');
+
+
+
+
+
+
+
+
+
 
 select * from address;
+
+
+
+
+
 
 
 insert into products (code, name, description, price, image)
 	values (1000, 'notebook', 'Acer Nitro 5 - core I7 - geforce GTX', 5500.00, 'notebook1.jpeg');
 
+
+
+
+
 insert into products (code, name, description, price, image)
 	values (2000, 'Iphone', 'Apple', 8500.00, 'iphone.jpeg'),
-	(3000, 'Monitor', 'Samsung', 2500.00, 'monitor.jpeg');
+	       (3000, 'Monitor', 'Samsung', 2500.00, 'monitor.jpeg');
 
-update products set price = 5500.89 where code=1000;
+
+
+
+
+update products 
+	set price = 5500.89
+	where id=1;
+
+
+
+
 
 select * from products;
+
+
+
+
+
 
 
 insert into orders(user_id, address_id, price, paid)
 	values (1, 1, 5500.89, true);
 
+
+
 select * from orders;
+
+
+
 
 
 insert into order_items (id_order, id_product, quantity)
@@ -123,6 +185,58 @@ insert into order_items (id_order, id_product, quantity)
 			(1,3,5);
 
 select * from order_items oi;
+
+
+
+select * 
+	from users
+	where id=1;
+
+select *
+	from address
+	where user_id = 1;
+
+
+/* comentario */
+select 
+	u.email,
+	a.street,
+	a.cep,
+	a.state
+	from users as u
+	left join address as a
+		on u.id = a.user_id;
+	
+	
+select 
+	u.email,
+	a.street,
+	a.cep,
+	a.state
+	from address as a
+	left join users as u 
+		on u.id = a.user_id;
+	
+	
+
+select * from address;	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*JOINS*/
@@ -145,24 +259,108 @@ select
 
 
 
+
+
+
+
+/* Operadores Aritmeticos */
+select *
+	from products as p
+	where p.price = 8500;
+
+
+
+
+
+
+
+
+/* Operadores Booleanos */
+select *
+	from address as a
+	where a.user_id = 1 and 
+		a.state = 'sp';
+
+
+
+
 /* Agregação */
 select
 	count(*), price
 	from products p
 	group by p.price;
 
+
 select
-	avg(price)
+	count(*) as quantity,
+	a.user_id
+	from address a
+	group by a.user_id;
+
+
+
+select
+	max(price)
 	from products p;
+
+select
+	sum(price)
+	from products p;
+
+
+select 
+	sum(p.price)*0.9
+	from order_items as oi
+	inner join products as p
+	on oi.id_product = p.id
+	where oi.id_order = 1;
+
 
 select distinct 
 	p.price 
 	from products p ;
 
-select * from products p ;
+
+select * from products;
+
+insert into products(code, name, description, price)
+	values (4000, 'Monitor LG', 'Monitor LG', 2500);
+
+
+
 
 select 
 	*
-	from products p order by p.price DESC;
+	from products p
+	order by p.description DESC;
+
+
+
+select 
+	* from products p
+	order by p.price desc, p.description asc;
+
+
+update products 
+	set name = 'abc'
+	where id=4;
+
+select *
+	from address a
+	where user_id = 1;
+
+create index ix_address_user on address(user_id);
+
+
+
+select *
+from pg_indexes
+where tablename not like 'pg%';
+
+
+
+
+explain select * 
+	from products c;
 
 
