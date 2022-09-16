@@ -15,10 +15,16 @@
         { '_id': 4,'name': 'José', 'email': 'José@gmail.com'}
     ]);
 
+
+
     use('luiza_code');
     db.clients.insertOne(
         {'name': 'Gabi', 'email': 'Gabi@gmail.com'}
     );
+
+
+
+
 
     use('luiza_code');
     db.products.insertMany([
@@ -28,6 +34,8 @@
         {'_id': 104, 'name': 'Mousepad', 'price': 50.00, 'quantity': 12, 'updated_at': new Date() },
         {'_id': 105, 'name': 'Iphone', 'price': 7200.00, 'quantity': 12, 'updated_at': new Date() }
     ]);
+
+
 
     use('luiza_code');
     db.wishlists.insertMany([
@@ -39,9 +47,15 @@
     ]);
 
 
+
+
+
+
 // -----  2. READ -------
     use('luiza_code');
-    db.clients.find({_id: ObjectId("626b2e144a4b2c867dc01957")});
+    db.clients.find(
+        {_id: ObjectId("6323a9f046230bff77854af4")}
+    );
 
     use('luiza_code');
     db.clients.find().pretty()
@@ -55,11 +69,14 @@
 
 
 
+
+
+
     // operadores gt e lt >=, <=, >, <
     use('luiza_code');
     db.products.find(
-        {price: {$gte:5000}}
-    )
+        {price: {$gte: 5000} }
+    );
 
     use('luiza_code');
     db.products.find(
@@ -68,8 +85,11 @@
 
     use('luiza_code');
     db.products.find(
-        {price: 200.00}
-    )
+        {
+            price: 200.00,
+            name: "Teclado"
+        }
+    );
 
 
 
@@ -80,13 +100,18 @@
     // clientes que começam com a letra J
     use('luiza_code');
     db.clients.find(
-        {name: {$regex: "^J"}}
+        {name: {$regex: "^Jos"} }
     );
 
     // clientes que terminam com a letra a
     use('luiza_code');
     db.clients.find(
         {name: {$regex: "a$"}}
+    );
+
+    // clientes busca com regex como like
+    db.clientes.find(
+        {name: {$regex: "(.*a.*)"}}
     );
 
 
@@ -101,19 +126,35 @@
     db.products.find(
         {
             $or: [
-                { price: {$gte: 5000.00}}, {quantity:12}
+                { price: {$gte: 5000.00}},
+                { quantity:12}
             ]
         }
     );
+
+
+
+
+
+
+
 
     use('luiza_code');
     db.products.find(
         {
             $and: [
-                { price: {$gte: 5000.00}}, {quantity: {$gte:15}}
+                { price: {$gte: 5000.00}},
+                { quantity: {$gte:15}}
             ]
         }
     );
+
+    use('luiza_code');
+    db.products.find({});
+
+
+
+
 
 
     use('luiza_code');
@@ -127,7 +168,14 @@
 
 
 
+
+
+
     // operadores all/in
+    use('luiza_code');
+    db.wishlists.find({});
+
+
     use('luiza_code');
     db.wishlists.find(
         {id_products: {$all: [101, 105]} }
@@ -142,16 +190,21 @@
 
 
 
+
+
+
     // limit
     use('luiza_code');
     db.wishlists.find(
         {id_products: {$in: [101, 105]} }
-    ).limit(1)
+    ).limit(2)
+
+
 
 
     // sorte 1 asc or -1 desc
     use('luiza_code');
-    db.products.find().sort({"price": -1});
+    db.products.find().sort({"price": 1});
 
 
 
@@ -164,10 +217,16 @@
     /** O operador set é usado quando queremos evitar que a substituição inteira do document aconteça, ou seja, 
     quando queremos acrescentar e / ou alterar somente alguns campos no document, sem apagar todos os outros. */
     use('luiza_code');
+    db.products.find({'_id': 105});
+
+
+
+    use('luiza_code');
     db.products.update(
         { _id: 101},
-        { $set:  {'price': 5750.00}}
+        { $set:  {'price': 5780.00}}
     );
+
 
     //Cria um novo document, caso não exista nenhum com as características passadas.
     use('luiza_code');
@@ -176,6 +235,10 @@
         { $set:  {'price': 5780.00}}, 
         { upsert: true}
     );
+
+
+
+
 
     // Remove os campos especificados nele.
     use('luiza_code');
@@ -186,10 +249,12 @@
 
 
 
+
+
 // 4. Delete
     // As operações de exclusão removem documentos de uma coleção.
     use('luiza_code');
-    db.products.deleteMany(
+    db.products.deleteOne(
         {_id: 107}
     );
 
@@ -209,6 +274,9 @@
     db.products.aggregate(
         [
             {
+                $match:{ "client_id": 100}
+            }
+            {
                 $group: {
                     '_id': {},
                     'min_price': {$min: '$price'}, 
@@ -217,15 +285,19 @@
                     'avg_price': {$avg: '$price'},
                     'total_quantity': {$sum: '$quantity'}
                 }
-            },
-            { 
-                $sort: {_id:1}
             }
         ]
     );
 
+
+
+
+
+    // analisar os clientes que colocaram o produto 101
+    // em 1 lista de
     use('luiza_code');
     db.wishlists.find()
+
 
     use('luiza_code');
     db.wishlists.aggregate(
@@ -235,9 +307,9 @@
             },
             {
                 $group: {'_id':
-                {
-                    'client_id': '$client_id'          
-                }
+                    {
+                        'client_id': '$client_id'          
+                    }
                 },
             },
             { 
@@ -249,12 +321,20 @@
     //relacionamento entre coleções
     use('luiza_code');
     db.wishlists.aggregate([
-            {
-                $lookup: {
-                    from: "clients",
-                    localField: "client_id",
-                    foreignField: "_id",
-                    as: "client"
+        {
+            $lookup: {
+                from: "clients",
+                localField: "client_id",
+                foreignField: "_id",
+                as: "client"
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                name: 1,
+                id_products: 1,
+                "client.name": 1
             }
         }
     ]).pretty();
@@ -273,7 +353,7 @@
 
 
     use('luiza_code');
-    db.products.count();
+    db.products.find({}).count();
 
 
     use('luiza_code');
